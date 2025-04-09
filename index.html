@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Empleados</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Inicio de Sesión</h1>
+        <form id="login-form" class="login-form">
+            <input 
+                type="text" 
+                id="email" 
+                placeholder="Correo o nombre de usuario" 
+                
+            > <br><br>
+            <input 
+                type="password" 
+                id="password" 
+                placeholder="Contraseña" 
+                
+            ><br><br>
+            <button type="submit">Ingresar</button><br>
+        </form>
+        <div id="error-message"></div>
+    </div>
+
+    <div id='empleados_list'></div> 
+    
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            //Usuario y contraseña registrada
+            const Pass = "admin";
+            const User = "admin";
+
+            //Comprovación de campos vacios.
+            if (!email || !password) {
+                errorMessage.textContent = 'Por favor, ingrese correo y contraseña';
+                return;
+            }
+
+            //Comparación de credenciales
+            if(email == User && password == Pass){
+                window.location.href = '/bienvenido.html';
+
+            }else{
+                errorMessage.textContent = 'Datos incorrectos';
+            }
+        
+        });
+
+
+
+
+
+
+
+            // Solicitud de autenticación al servidor
+            /*
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirigir o mostrar contenido de empleados
+                    errorMessage.textContent = ''
+                    
+                    window.location.href = '/bienvenido.html'
+                    // cargarEmpleados();
+                } else {
+                    errorMessage.textContent = data.message || 'Credenciales incorrectas';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.textContent = 'Error en la conexión';
+            });
+        });
+        */
+    </script>
+</body>
+</html>

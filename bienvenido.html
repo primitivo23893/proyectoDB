@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>BIENVENIDO AL SISTEMA</h1>
+<form action="">
+    <input type="number" id="num">
+    <input type="button" value="Enviar" onclick="enviar()">
+</form>
+<div id="mensaje"></div>
+<div id="mensaje-2"></div>
+    <script>
+    function enviar(){
+        let numero = document.getElementById("num").value; 
+        $.ajax({
+            url     : '/numero',
+            type    : 'get',
+            dataType: 'text',
+            data    : {numero: numero},
+            success : function(res){
+                console.log(res);
+                if(res == '1'){
+                    $('#mensaje-2').html('APROBASTE');
+                }else{
+                $('#mensaje').html('REPORBASTE')
+            }
+            setTimeout("$('mensaje').html('')", 5000);
+            setTimeout("$('mensaje-2').html('')", 5000);
+        },error:function(){
+            alert('Error archivo no enocntrado...');
+        }
+    });
+}
+
+
+    </script>
+</body>
+</html>
