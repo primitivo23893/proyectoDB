@@ -98,6 +98,7 @@
     <form action="verificar.php" method="post">
         <h2>Iniciar Sesión</h2>
 
+        
         <label for="usuario">Usuario:</label>
         <input type="text" id="usuario" name="usuario" required>
 
