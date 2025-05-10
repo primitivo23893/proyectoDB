@@ -3,7 +3,7 @@ session_start();
 
 $host = 'localhost';
 $port = '5432';
-$dbname = 'Biblioteca';
+$dbname = 'biblioteca';
 $user = 'postgres';
 $password = '1234';
 
@@ -14,7 +14,7 @@ try {
 
     // Recoge los datos del formulario
     $usuario = $_POST['usuario'];
-    $contrasena = $_POST['contraseña'];
+    $contrasena = $_POST['contrasena'];
 
     // Consulta sin comillas dobles
     $stmt = $conn->prepare('SELECT * FROM usuario WHERE usuario = :usuario AND contraseña = :contrasena');
