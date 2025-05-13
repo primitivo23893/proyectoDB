@@ -5,7 +5,8 @@ include 'conexion.php';
 $con = conecta();
 
 try {
-    $query = "SELECT isbn, titulo FROM libro GROUP BY isbn, titulo ORDER BY titulo ASC";
+    //$query = "SELECT isbn, titulo FROM libro GROUP BY isbn, titulo ORDER BY titulo ASC";
+    $query = "SELECT isbn, titulo, autor, num_ejemplar FROM libro ORDER BY titulo ASC, num_ejemplar ASC";
     $stmt = $con->query($query);
     $libros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
