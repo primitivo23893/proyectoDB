@@ -68,7 +68,7 @@
 <body>
     <div class="form-container">
         <h2>Registrar Préstamo de Libro</h2>
-        <form action="registrar_prestamo.php" method="POST">
+        <form action="Almacenar_prestamo.php" method="POST">
             <label for="tipo_persona">Tipo de persona:</label>
             <select name="tipo_persona" id="tipo_persona" required>
                 <option value="">-- Selecciona --</option>
