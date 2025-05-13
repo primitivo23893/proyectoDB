@@ -81,14 +81,9 @@
                 <option value="">-- Selecciona un nombre --</option>
             </select>
             
-            <label for="correo">Correo electrónico:</label>
-            <input type="email" name="correo" id="correo" required>
-
             <label for="libro">Libro que desea solicitar:</label>
             <select name="libro" id="libro" required>
                 <option value="">-- Selecciona un libro --</option>
-                <option value="Fundamentos de Sistemas de Bases de Datos - Ramez">Fundamentos de Sistemas de Bases de Datos - Ramez</option>
-                <option value="Bases de datos, diseño, implementación y administración - Carlos Coronel">Bases de datos, diseño, implementación y administración - Carlos Coronel</option>
             </select>
 
             <input type="submit" value="Registrar Préstamo">
@@ -122,6 +117,25 @@
                 nombreSelect.innerHTML = '<option value="">Error al cargar nombres</option>';
             });
     });
+
+    window.addEventListener('DOMContentLoaded', function () {
+    const libroSelect = document.getElementById('libro');
+    fetch('obtener_libros.php')
+        .then(response => response.json())
+        .then(data => {
+            libroSelect.innerHTML = '<option value="">-- Selecciona un libro --</option>';
+            data.forEach(function (libro) {
+                const option = document.createElement('option');
+                option.value = libro.isbn; // esto se manda en el formulario
+                option.textContent = libro.titulo;
+                libroSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar libros:', error);
+            libroSelect.innerHTML = '<option value="">Error al cargar libros</option>';
+        });
+});
 </script>
 </body>
 </html>
