@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -75,9 +76,10 @@
             padding: 15px;
             border-radius: 8px;
             font-size: 16px;
-            width: 60%;
-            margin: 20px auto;
+            /*width: 100%; /* Ajusta el ancho al formulario */
+            margin-top: 20px; /* Espaciado hacia abajo del formulario */
             text-align: center;
+            display: none; /* Oculto por defecto */
         }
 
         .success {
@@ -95,18 +97,55 @@
     </style>
 </head>
 <body>
-    <form action="verificar.php" method="post">
+    <form id="loginForm">
         <h2>Iniciar Sesión</h2>
 
-        
         <label for="usuario">Usuario:</label>
         <input type="text" id="usuario" name="usuario" required>
 
-        <label for="contraseña">Contraseña:</label>
-        <input type="password" id="contraseña" name="contraseña" required>
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" id="contrasena" name="contrasena" required>
 
         <input type="submit" value="Ingresar">
+        <div id="message" class="message"></div>
     </form>
+
+    <!-- Contenedor del mensaje -->
+    
+
+    <script>
+    $(document).ready(function () {
+        $('#loginForm').on('submit', function (e) {
+            e.preventDefault(); 
+            const formData = $(this).serialize(); // Serializa los datos del formulario
+
+            $.ajax({
+                url: 'verificar.php',
+                type: 'POST',
+                data: formData,
+                dataType: 'text', 
+                success: function (response) {
+                    if (response.trim() === '1') {
+                        // No se hace nada porque la redirección ocurre en verificar.php
+                    } else {
+                        $('#message')
+                            .removeClass('success')
+                            .addClass('error')
+                            .text('Usuario o contraseña incorrectos.')
+                            .fadeIn();
+                    }
+                },
+                error: function () {
+                    $('#message')
+                        .removeClass('success')
+                        .addClass('error')
+                        .text('Error al procesar la solicitud.')
+                        .fadeIn();
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
 
