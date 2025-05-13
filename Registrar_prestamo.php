@@ -119,21 +119,53 @@
     });
 
     window.addEventListener('DOMContentLoaded', function () {
-    const libroSelect = document.getElementById('libro');
+    const libroSelect = document.getElementById('libro'); // ID de tu elemento <select>
+
+    if (!libroSelect) {
+        console.error("Elemento <select> con id 'libro' no encontrado.");
+        return;
+    }
+
     fetch('obtener_libros.php')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // Intenta obtener el mensaje de error del cuerpo JSON si el servidor lo envió
+                return response.json().then(errData => {
+                    throw new Error(errData.error || `Error del servidor: ${response.status}`);
+                }).catch(() => {
+                    // Si no hay cuerpo JSON o falla el parseo, usa el statusText
+                    throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+                });
+            }
+            return response.json(); // Parsea la respuesta JSON si la petición fue exitosa
+        })
         .then(data => {
+            // Verifica si la data recibida es un array (éxito) o un objeto de error
+            if (data && data.error) { // El servidor PHP podría devolver un JSON con una clave 'error'
+                console.error('Error desde el servidor PHP:', data.error);
+                libroSelect.innerHTML = `<option value="">Error al cargar: ${data.error}</option>`;
+                return;
+            }
+            if (!Array.isArray(data)) {
+                console.error('Respuesta inesperada del servidor:', data);
+                libroSelect.innerHTML = '<option value="">Respuesta inesperada del servidor</option>';
+                return;
+            }
+
             libroSelect.innerHTML = '<option value="">-- Selecciona un libro --</option>';
             data.forEach(function (libro) {
                 const option = document.createElement('option');
-                option.value = libro.isbn; // esto se manda en el formulario
-                option.textContent = libro.titulo;
+                option.value = libro.isbn; // Valor que se envía con el formulario
+
+                // Formato del texto: Título - Autor - Ejemplar #
+                option.textContent = `${libro.titulo} - ${libro.autor} - Ejemplar ${libro.num_ejemplar}`;
+                
                 libroSelect.appendChild(option);
             });
         })
         .catch(error => {
-            console.error('Error al cargar libros:', error);
-            libroSelect.innerHTML = '<option value="">Error al cargar libros</option>';
+            console.error('Error en la petición fetch o procesando la respuesta:', error);
+            libroSelect.innerHTML = `<option value="">Error al cargar libros: ${error.message}</option>`;
         });
 });
 </script>
