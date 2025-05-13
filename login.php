@@ -103,7 +103,7 @@
         <input type="text" id="usuario" name="usuario" required>
 
         <label for="contraseña">Contraseña:</label>
-        <input type="password" id="contraseña" name="contraseña" required>
+        <input type="password" id="contrasena" name="contrasena" required>
 
         <input type="submit" value="Ingresar">
     </form>

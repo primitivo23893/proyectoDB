@@ -17,7 +17,7 @@ try {
     $contrasena = $_POST['contrasena'];
 
     // Consulta sin comillas dobles
-    $stmt = $conn->prepare('SELECT * FROM usuario WHERE usuario = :usuario AND contraseña = :contrasena');
+    $stmt = $conn->prepare('SELECT * FROM usuario WHERE usuario = :usuario AND contrasena = :contrasena');
     $stmt->bindParam(':usuario', $usuario);
     $stmt->bindParam(':contrasena', $contrasena);
     $stmt->execute();
@@ -25,7 +25,7 @@ try {
     if ($stmt->rowCount() === 1) {
         $_SESSION['usuario'] = $usuario;
 
-        if ($usuario === 'admin') {
+        if ($usuario === 'Admin') {
             header("Location: inicio_admin.php");
         } else {
             header("Location: inicio_empleado.php");

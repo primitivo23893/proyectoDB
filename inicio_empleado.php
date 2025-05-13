@@ -52,12 +52,97 @@
         .logout-button:hover {
             background-color: #c62828;
         }
+
+        .menu-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .menu-button:hover {
+        background-color: #45a049;
+    }
+    .dropdown-menu {
+        background: rgba(255, 255, 255, 0.7); /* Fondo blanco semitransparente */
+        backdrop-filter: blur(10px); /* Borroso */
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        min-width: 250px;
+        padding: 10px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .menu-item {
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        cursor: pointer;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .menu-item:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .submenu {
+        padding-left: 0;
+        display: none;
+        width: 100%;
+    }
+
+    .submenu a {
+        display: block;
+        padding: 8px;
+        text-decoration: none;
+        color: #333;
+        text-align: center;
+    }
+
+    .submenu a:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
     </style>
 </head>
 <body>
     <div class="message-container">
+        <button class="menu-button" onclick="toggleMenu()">Menú</button>
         <div class="message">✅ Bienvenido, <?php echo htmlspecialchars($usuario); ?>. Has ingresado correctamente.</div>
         <a href="login.php" class="logout-button">Salir</a>
     </div>
+
+    <div class="dropdown-menu" id="mainMenu">
+        
+        <div class="menu-item" onclick="toggleSubmenu('alumnosSubmenu')">PRESTAMOS</div>
+        <div class="submenu" id="alumnosSubmenu">
+            <a href="Registrar_prestamo.php">Registrar prestamo</a>
+            <a href="Prestamos_consulta.php">Consultas Prestamos</a>
+        </div>
+        
+    </div>
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById('mainMenu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+        
+        function toggleSubmenu(id) {
+            var submenu = document.getElementById(id);
+            if (submenu.style.display === 'block') {
+                submenu.style.display = 'none';
+            } else {
+                submenu.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>
