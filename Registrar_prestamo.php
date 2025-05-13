@@ -80,7 +80,7 @@
             <select name="nombre" id="nombre" required>
                 <option value="">-- Selecciona un nombre --</option>
             </select>
-            
+
             <label for="libro">Libro que desea solicitar:</label>
             <select name="libro" id="libro" required>
                 <option value="">-- Selecciona un libro --</option>
