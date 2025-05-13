@@ -6,46 +6,50 @@ include 'conexion.php'; // Asegúrate que este archivo establece correctamente l
 $con = conecta();
 
 try {
-    // CAMBIO: La consulta sigue siendo la misma, pero el procesamiento posterior en PHP cambiará
-    // para agrupar los ejemplares por libro.
-    // 'num_ejemplar' se asume que es el identificador de la copia específica para un ISBN dado.
+    // Esta consulta obtiene todos los ejemplares. La agrupación se hace en PHP.
+    // Asegúrate que los nombres de las columnas (isbn, titulo, autor, num_ejemplar)
+    // y el nombre de la tabla (libro) sean correctos.
     $query = "SELECT isbn, titulo, autor, num_ejemplar FROM libro ORDER BY titulo ASC, isbn ASC, num_ejemplar ASC";
-    $stmt = $con->query($query);
+    $stmt = $con->prepare($query); // Es buena práctica preparar la consulta
+    $stmt->execute();
 
-    // Es buena práctica verificar si la consulta se ejecutó correctamente,
-    // especialmente si PDO no está configurado para lanzar excepciones en todos los errores.
     if (!$stmt) {
         throw new PDOException("Error al ejecutar la consulta para obtener los libros.");
     }
     
     $all_exemplars = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // CAMBIO: Agrupar ejemplares por libro
-    $libros_agrupados = [];
-    foreach ($all_exemplars as $exemplar_row) {
-        $isbn = $exemplar_row['isbn'];
-        
-        // Si el libro (identificado por ISBN) aún no está en nuestro array de agrupados, lo inicializamos.
-        if (!isset($libros_agrupados[$isbn])) {
-            $libros_agrupados[$isbn] = [
-                'isbn' => $isbn,
-                'titulo' => $exemplar_row['titulo'],
-                'autor' => $exemplar_row['autor'],
-                'ejemplares_disponibles' => [] // Aquí guardaremos los números de ejemplar
-            ];
+    $libros_agrupados = []; // Aquí se guardarán los libros únicos con sus ejemplares
+    
+    if (empty($all_exemplars)) {
+        // No hay libros en la base de datos o la consulta no devolvió resultados.
+        // Devolver un array vacío es válido JSON y el frontend debería manejarlo.
+    } else {
+        foreach ($all_exemplars as $exemplar_row) {
+            $isbn = $exemplar_row['isbn'];
+            
+            // Si este ISBN no ha sido visto antes, creamos una nueva entrada para el libro
+            if (!isset($libros_agrupados[$isbn])) {
+                $libros_agrupados[$isbn] = [
+                    'isbn' => $isbn,
+                    'titulo' => $exemplar_row['titulo'], // Asumimos que título y autor son iguales para el mismo ISBN
+                    'autor' => $exemplar_row['autor'],
+                    'ejemplares_disponibles' => [] // Inicializamos la lista de sus ejemplares
+                ];
+            }
+            // Añadimos el número de este ejemplar a la lista de ejemplares del libro correspondiente
+            $libros_agrupados[$isbn]['ejemplares_disponibles'][] = $exemplar_row['num_ejemplar'];
         }
-        // Añadimos el número de ejemplar actual a la lista de ejemplares disponibles para este libro.
-        $libros_agrupados[$isbn]['ejemplares_disponibles'][] = $exemplar_row['num_ejemplar'];
     }
 
-    // CAMBIO: Convertir el array asociativo (indexado por ISBN) a un array numérico simple para la salida JSON.
+    // Convertimos el array asociativo (indexado por ISBN) a un array numérico simple para la salida JSON.
     // Esto asegura que el JSON sea un array de objetos libro, como espera el JavaScript.
     echo json_encode(array_values($libros_agrupados));
 
 } catch (PDOException $e) {
-    // CAMBIO: Mejor manejo de errores
-    http_response_code(500); // Error Interno del Servidor
-    // En un entorno de producción, es mejor loguear $e->getMessage() y mostrar un error genérico al usuario.
-    echo json_encode(['error' => 'Error al obtener la lista de libros desde el servidor: ' . $e->getMessage()]);
+    http_response_code(500); 
+    error_log("Error en obtener_libros.php: " . $e->getMessage()); // Loguear el error en el servidor
+    // Enviar un mensaje de error genérico al cliente por seguridad
+    echo json_encode(['error' => 'Error en el servidor al obtener la lista de libros. Por favor, intente más tarde o contacte al administrador.']);
 }
 ?>
