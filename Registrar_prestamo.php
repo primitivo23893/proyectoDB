@@ -8,165 +8,253 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            flex-direction: column;
         }
-
         .form-container {
             background-color: white;
             padding: 30px 40px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #444;
-        }
-
-        select, input[type="text"] {
-            width: 100%;
-            padding: 10px;
+            margin-top: 20px;
             margin-bottom: 20px;
-            border: 1px solid #ccc;
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #444; }
+        select, input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        input[type="submit"] { width: 100%; background-color: #0066cc; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease; }
+        input[type="submit"]:hover { background-color: #004d99; }
+        input[type="submit"]:disabled { background-color: #cccccc; cursor: not-allowed; }
+        .feedback-message {
+            padding: 10px;
+            margin-top: 15px;
             border-radius: 6px;
-            font-size: 14px;
+            text-align: center;
+            font-size: 0.9em;
         }
-
-        input[type="submit"] {
-            width: 100%;
-            background-color: #0066cc;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #004d99;
-        }
+        .feedback-message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
+        .feedback-message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        .feedback-message.info { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db;}
     </style>
-    
-    
 </head>
 <body>
     <div class="form-container">
         <h2>Registrar Préstamo de Libro</h2>
-        <form action="Almacenar_prestamo.php" method="POST">
-            <label for="tipo_persona">Tipo de persona:</label>
+        <form id="formRegistrarPrestamo" method="POST"> <label for="tipo_persona">Tipo de persona:</label>
             <select name="tipo_persona" id="tipo_persona" required>
                 <option value="">-- Selecciona --</option>
-                <option value="alumna">alumno</option>
+                <option value="alumna">Alumno</option>
                 <option value="maestra">Maestro</option>
             </select>
 
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre (Código):</label>
             <select name="nombre" id="nombre" required>
-                <option value="">-- Selecciona un nombre --</option>
+                <option value="">-- Selecciona un tipo de persona primero --</option>
             </select>
 
             <label for="libro">Libro que desea solicitar:</label>
             <select name="libro" id="libro" required>
-                <option value="">-- Selecciona un libro --</option>
+                <option value="">-- Cargando libros... --</option>
+            </select>
+
+            <label for="ejemplar">Ejemplar disponible:</label>
+            <select name="ejemplar" id="ejemplar" required>
+                <option value="">-- Selecciona un libro primero --</option>
             </select>
 
             <input type="submit" value="Registrar Préstamo">
         </form>
-    </div>
-    <script>
-    document.getElementById('tipo_persona').addEventListener('change', function () {
-        const tipoPersona = this.value;
+        <div id="feedbackContainer"></div> </div>
 
-        const nombreSelect = document.getElementById('nombre');
-        nombreSelect.innerHTML = '<option value="">Cargando...</option>';
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tipoPersonaSelect = document.getElementById('tipo_persona');
+    const nombreSelect = document.getElementById('nombre');
+    const libroSelect = document.getElementById('libro');
+    const ejemplarSelect = document.getElementById('ejemplar');
+    const formRegistrarPrestamo = document.getElementById('formRegistrarPrestamo');
+    const feedbackContainer = document.getElementById('feedbackContainer');
+    let librosConEjemplares = []; // Cache para datos de libros
 
-        if (tipoPersona === '') {
-            nombreSelect.innerHTML = '<option value="">-- Selecciona un nombre --</option>';
-            return;
+    function mostrarFeedback(mensaje, tipo = 'info', anadir = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `feedback-message ${tipo}`;
+        messageDiv.textContent = mensaje;
+        if (anadir) {
+            const br = feedbackContainer.querySelector('br');
+            if (!br && feedbackContainer.childNodes.length > 0) { // Añadir BR solo si hay contenido y no hay ya un BR
+                 feedbackContainer.appendChild(document.createElement('br'));
+            }
+            feedbackContainer.appendChild(messageDiv);
+        } else {
+            feedbackContainer.innerHTML = ''; // Limpiar antes si no se añade
+            feedbackContainer.appendChild(messageDiv);
         }
+    }
 
-        fetch('obtener_nombres.php?tipo=' + tipoPersona)
+    // Cargar nombres según tipo de persona
+    if (tipoPersonaSelect && nombreSelect) {
+        tipoPersonaSelect.addEventListener('change', function () {
+            const tipoPersona = this.value;
+            nombreSelect.innerHTML = '<option value="">Cargando...</option>';
+            nombreSelect.disabled = true;
+            if (tipoPersona === '') {
+                nombreSelect.innerHTML = '<option value="">-- Selecciona un tipo de persona primero --</option>';
+                return;
+            }
+            fetch('obtener_nombres.php?tipo=' + tipoPersona)
+                .then(response => response.json())
+                .then(data => {
+                    nombreSelect.innerHTML = '<option value="">-- Selecciona un nombre --</option>';
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        data.forEach(function (persona) {
+                            const option = document.createElement('option');
+                            option.value = persona.codigo; // El valor es el código
+                            option.textContent = persona.nombre; // El texto es el nombre
+                            nombreSelect.appendChild(option);
+                        });
+                        nombreSelect.disabled = false;
+                    } else {
+                         nombreSelect.innerHTML = '<option value="">No hay nombres para este tipo</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener nombres:', error);
+                    nombreSelect.innerHTML = `<option value="">Error al cargar nombres</option>`;
+                });
+        });
+        if (tipoPersonaSelect.value === '') nombreSelect.disabled = true;
+    }
+
+    // Cargar libros y manejar selección de ejemplares
+    if (libroSelect && ejemplarSelect) {
+        ejemplarSelect.disabled = true;
+        fetch('obtener_libros.php')
             .then(response => response.json())
             .then(data => {
-                nombreSelect.innerHTML = '<option value="">-- Selecciona un nombre --</option>';
-                data.forEach(function (persona) {
+                if (data && data.error) throw new Error(data.error);
+                if (!Array.isArray(data)) throw new Error('Respuesta inesperada del servidor al cargar libros.');
+                librosConEjemplares = data;
+                libroSelect.innerHTML = '<option value="">-- Selecciona un libro --</option>';
+                librosConEjemplares.forEach(function (libro) {
                     const option = document.createElement('option');
-                    option.value = persona.codigo;
-                    option.textContent = persona.nombre;
-                    nombreSelect.appendChild(option);
+                    option.value = libro.isbn;
+                    option.textContent = `${libro.titulo} - ${libro.autor}`;
+                    libroSelect.appendChild(option);
                 });
             })
             .catch(error => {
-                console.error('Error al obtener nombres:', error);
-                nombreSelect.innerHTML = '<option value="">Error al cargar nombres</option>';
+                console.error('Error al cargar libros:', error);
+                libroSelect.innerHTML = `<option value="">Error al cargar libros: ${error.message}</option>`;
             });
-    });
 
-    window.addEventListener('DOMContentLoaded', function () {
-    const libroSelect = document.getElementById('libro'); // ID de tu elemento <select>
-
-    if (!libroSelect) {
-        console.error("Elemento <select> con id 'libro' no encontrado.");
-        return;
+        libroSelect.addEventListener('change', function () {
+            const selectedIsbn = this.value;
+            ejemplarSelect.innerHTML = '';
+            ejemplarSelect.disabled = true;
+            if (!selectedIsbn) {
+                ejemplarSelect.innerHTML = '<option value="">-- Selecciona un libro primero --</option>';
+                return;
+            }
+            const libroSeleccionado = librosConEjemplares.find(b => b.isbn === selectedIsbn);
+            if (libroSeleccionado && libroSeleccionado.ejemplares_disponibles && libroSeleccionado.ejemplares_disponibles.length > 0) {
+                ejemplarSelect.innerHTML = '<option value="">-- Selecciona un ejemplar --</option>';
+                libroSeleccionado.ejemplares_disponibles.forEach(function (num_ejemplar) {
+                    const option = document.createElement('option');
+                    option.value = num_ejemplar;
+                    option.textContent = `Ejemplar ${num_ejemplar}`;
+                    ejemplarSelect.appendChild(option);
+                });
+                ejemplarSelect.disabled = false;
+            } else {
+                ejemplarSelect.innerHTML = '<option value="">No hay ejemplares disponibles</option>';
+            }
+        });
     }
 
-    fetch('obtener_libros.php')
-        .then(response => {
-            if (!response.ok) {
-                // Intenta obtener el mensaje de error del cuerpo JSON si el servidor lo envió
-                return response.json().then(errData => {
-                    throw new Error(errData.error || `Error del servidor: ${response.status}`);
-                }).catch(() => {
-                    // Si no hay cuerpo JSON o falla el parseo, usa el statusText
-                    throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
-                });
-            }
-            return response.json(); // Parsea la respuesta JSON si la petición fue exitosa
-        })
-        .then(data => {
-            // Verifica si la data recibida es un array (éxito) o un objeto de error
-            if (data && data.error) { // El servidor PHP podría devolver un JSON con una clave 'error'
-                console.error('Error desde el servidor PHP:', data.error);
-                libroSelect.innerHTML = `<option value="">Error al cargar: ${data.error}</option>`;
-                return;
-            }
-            if (!Array.isArray(data)) {
-                console.error('Respuesta inesperada del servidor:', data);
-                libroSelect.innerHTML = '<option value="">Respuesta inesperada del servidor</option>';
-                return;
-            }
+    // Manejo del envío del formulario
+    if (formRegistrarPrestamo) {
+        formRegistrarPrestamo.addEventListener('submit', function(event) {
+            event.preventDefault();
+            feedbackContainer.innerHTML = ''; // Limpiar mensajes previos
+            mostrarFeedback('Procesando registro de préstamo...', 'info');
 
-            libroSelect.innerHTML = '<option value="">-- Selecciona un libro --</option>';
-            data.forEach(function (libro) {
-                const option = document.createElement('option');
-                option.value = libro.isbn; // Valor que se envía con el formulario
+            const formData = new FormData(formRegistrarPrestamo);
+            const submitButton = formRegistrarPrestamo.querySelector('input[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.value = 'Enviando...';
 
-                // Formato del texto: Título - Autor - Ejemplar #
-                option.textContent = `${libro.titulo} - ${libro.autor} - Ejemplar ${libro.num_ejemplar}`;
-                
-                libroSelect.appendChild(option);
+            // 1. Llamada a Almacenar_prestamo.php
+            fetch('Almacenar_prestamo.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(dataAlmacenar => {
+                if (dataAlmacenar.success) {
+                    mostrarFeedback(dataAlmacenar.message, 'success'); // Mensaje de éxito del préstamo
+                    mostrarFeedback('Enviando correo de confirmación...', 'info', true);
+                    
+                    // 2. Si Almacenar_prestamo fue exitoso, llamar a enviar_correo.php
+                    // Crear FormData para enviar_correo.php
+                    const datosParaCorreo = new FormData();
+                    for (const key in dataAlmacenar.datos_correo) {
+                        datosParaCorreo.append(key, dataAlmacenar.datos_correo[key]);
+                    }
+
+                    return fetch('enviar_correo.php', {
+                        method: 'POST',
+                        body: datosParaCorreo
+                    });
+                } else {
+                    // Si Almacenar_prestamo falló, mostrar error y no continuar.
+                    throw new Error(dataAlmacenar.message || 'Error desconocido al registrar el préstamo.');
+                }
+            })
+            .then(responseCorreo => {
+                if (!responseCorreo) return; // Si la promesa anterior lanzó error, responseCorreo será undefined
+                return responseCorreo.json();
+            })
+            .then(dataCorreo => {
+                if (dataCorreo) { // Si se intentó enviar correo y hubo respuesta JSON
+                    if (dataCorreo.success) {
+                        mostrarFeedback(dataCorreo.message, 'success', true);
+                        formRegistrarPrestamo.reset(); // Limpiar formulario tras éxito total
+                        // Restablecer selects dependientes a su estado inicial
+                        nombreSelect.innerHTML = '<option value="">-- Selecciona un tipo de persona primero --</option>';
+                        nombreSelect.disabled = true;
+                        if (tipoPersonaSelect) tipoPersonaSelect.value = ""; // Reset tipo_persona también
+                        libroSelect.value = ""; // Reset libro
+                        ejemplarSelect.innerHTML = '<option value="">-- Selecciona un libro primero --</option>';
+                        ejemplarSelect.disabled = true;
+                    } else {
+                        mostrarFeedback(dataCorreo.message || 'Error desconocido al enviar el correo.', 'error', true);
+                    }
+                }
+                // Si dataCorreo es undefined (error en paso anterior), no se hace nada más aquí.
+            })
+            .catch(error => {
+                console.error('Error en el proceso de registro y/o envío de correo:', error);
+                // El mensaje de error ya podría estar en feedbackContainer si vino de una falla controlada de los PHP.
+                // Este catch es más para errores de red o excepciones no capturadas.
+                if (feedbackContainer.innerHTML.includes('Procesando') || feedbackContainer.innerHTML === '') {
+                    mostrarFeedback(`Error: ${error.message}`, 'error');
+                } else { // Si ya hay un mensaje de error de PHP, añadir este como detalle.
+                    mostrarFeedback(`Detalle adicional: ${error.message}`, 'error', true);
+                }
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.value = 'Registrar Préstamo';
             });
-        })
-        .catch(error => {
-            console.error('Error en la petición fetch o procesando la respuesta:', error);
-            libroSelect.innerHTML = `<option value="">Error al cargar libros: ${error.message}</option>`;
         });
+    }
 });
 </script>
 </body>
