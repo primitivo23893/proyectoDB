@@ -3,6 +3,9 @@ const { Pool } = require('pg');
 const path = require('path'); 
 const bodyParser = require('body-parser');
 
+//Env
+require('dotenv').config();
+
 const app = express(); 
 const port = 3000;
 
@@ -10,12 +13,19 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
+const DB_HOST = process.env.DB_HOST;
+const DB_USER = process.env.DB_USER;
+const DB_PASS = process.env.DB_PASS;
+const DB_NAME = process.env.DB_NAME;
+const DB_PORT = process.env.DB_PORT;
+
 const pool = new Pool({ 
-    user: 'admin', 
-    host: 'localhost', 
-    database: 'empleado', 
-    password: '1234', 
-    port: 5433
+    user: DB_USER, 
+    host: DB_HOST, 
+    database: DB_NAME,
+    password: DB_PASS,
+    port: DB_PORT 
+
 });   
 
 app.get('/', (req, res) => { 
@@ -24,12 +34,12 @@ app.get('/', (req, res) => {
 
 // Ruta de autenticación
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { usuario, contrasena } = req.body;
 
     try {
         // Consulta para verificar credenciales
-        const query = 'SELECT * FROM usuarios WHERE email = $1 AND password = $2';
-        const result = await pool.query(query, [email, password]);
+        const query = 'SELECT * FROM usuario WHERE usuario = $1 AND contrasena = $2';
+        const result = await pool.query(query, [usuario, contrasena]);
 
         if (result.rows.length > 0) {
             res.json({ success: true, message: 'Inicio de sesión exitoso' });
