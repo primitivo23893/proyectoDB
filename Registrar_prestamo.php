@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Registrar Préstamo</title>
     <style>
+
+    
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
@@ -16,7 +18,81 @@
             min-height: 100vh;
             flex-direction: column;
         }
+ .top-bar {
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(10px);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        top: 0;
+    }
+ .button-group a, .menu-button {
+        background: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        margin-left: 10px;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
 
+    .button-group a.logout-button {
+        background: #e53935;
+    }
+
+    .button-group a.return-button {
+        background: #2196F3;
+    }
+
+    .button-group a:hover, .menu-button:hover {
+        filter: brightness(0.9);
+    }
+.dropdown-menu {
+        display: none;
+        position: fixed;
+        top: 70px;
+        left: 20px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: fadeIn 0.5s;
+    }
+
+    .menu-item {
+        padding: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        font-weight: 500;
+    }
+
+    .menu-item:hover {
+        background: #f0f0f0;
+    }
+
+    .submenu {
+        display: none;
+        padding-left: 20px;
+        background: #fafafa;
+    }
+
+    .submenu a {
+        display: block;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .submenu a:hover {
+        background: #e0e0e0;
+    }
         .form-container {
             background-color: white;
             padding: 30px 40px;
@@ -102,6 +178,24 @@
 </head>
 
 <body>
+     <div class="top-bar">
+        <button class="menu-button" onclick="toggleMenu()">Menú</button>
+        <div class="button-group">
+            <a href="inicio_empleado.php?usuario=<?php echo urlencode($usuario); ?>" class="return-button">Regresar</a>
+            <a href="login.php" class="logout-button">Salir</a>
+        </div>
+    </div>
+    <div class="dropdown-menu" id="mainMenu">
+        <div class="menu-item" onclick="toggleSubmenu('alumnosSubmenu')">Prestamo</div>
+        <div class="submenu" id="alumnosSubmenu">
+            <a href="Registrar_prestamo.php?usuario=<?php echo urlencode($usuario); ?>">Registrar</a>
+            <a href="Prestamo_consulta.php?usuario=<?php echo urlencode($usuario); ?>">Consultas</a>
+        </div>
+        
+       
+        
+       
+    </div>
     <div class="form-container">
         <h2>Registrar Préstamo de Libro</h2>
         <form id="formRegistrarPrestamo" method="POST">
@@ -133,6 +227,23 @@
     </div>
 
     <script>
+         function toggleMenu() {
+            var menu = document.getElementById('mainMenu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+        
+        function toggleSubmenu(id) {
+            var submenu = document.getElementById(id);
+            if (submenu.style.display === 'block') {
+                submenu.style.display = 'none';
+            } else {
+                submenu.style.display = 'block';
+            }
+        }
         document.addEventListener('DOMContentLoaded', function () {
             const tipoPersonaSelect = document.getElementById('tipo_persona');
             const nombreSelect = document.getElementById('nombre');
