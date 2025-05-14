@@ -52,6 +52,18 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.listen(port, () => { 
+    console.log(`Servidor iniciado en el puerto ${port}`); 
+});
+
+
+
+
+
+
+
+
+/*
 // Ruta para obtener empleados
 app.get('/empleados', async (req, res) => { 
     try {
@@ -84,3 +96,5 @@ app.get('/numero', async (req, res) =>{
 app.listen(port, () => { 
     console.log(`Servidor iniciado en el puerto ${port}`); 
 });
+
+*/

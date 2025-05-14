@@ -1,0 +1,73 @@
+<?php
+
+session_start();
+
+
+$host = 'localhost';
+$port = '5432';
+$dbname = 'biblioteca';
+$user = 'postgres';
+$password = '1234'; 
+
+// Establecer la cabecera para la respuesta JSON
+header('Content-Type: application/json');
+
+// Inicializar la respuesta por defecto (error)
+$response = ['success' => false, 'message' => 'Error desconocido en el servidor.'];
+
+try {
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;";
+    $conn = new PDO($dsn, $user, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Validar que los datos POST existen
+    if (!isset($_POST['usuario']) || !isset($_POST['contrasena'])) {
+        $response['message'] = 'Datos de usuario o contraseña no recibidos.';
+        echo json_encode($response);
+        exit;
+    }
+
+    // Recoge los datos del formulario
+    $usuario = $_POST['usuario'];
+    $contrasena = $_POST['contrasena']; 
+
+    // Consulta preparada - compara usuario y contraseña en texto plano
+    $stmt = $conn->prepare('SELECT * FROM usuario WHERE usuario = :usuario AND contrasena = :contrasena');
+    $stmt->bindParam(':usuario', $usuario);
+    $stmt->bindParam(':contrasena', $contrasena);
+    $stmt->execute();
+
+    // Verificar si se encontró exactamente un usuario
+    if ($stmt->rowCount() === 1) {
+
+        $_SESSION['usuario'] = $usuario; // Iniciar la sesión del usuario
+
+
+        $redirect_url = ($usuario === 'Admin') ? 'inicio_admin.php' : 'inicio_empleado.php';
+
+
+        $response = [
+            'success' => true,
+            'redirect' => $redirect_url
+        ];
+
+    } else {
+
+        $response['message'] = 'Usuario o contraseña incorrectos.';
+    }
+
+} catch (PDOException $e) {
+
+    error_log("Error de base de datos: " . $e->getMessage()); // Ejemplo de log en el servidor
+    $response['message'] = 'Error al conectar con la base de datos.';
+
+} catch (Exception $e) {
+    // Captura otros posibles errores
+    error_log("Error general: " . $e->getMessage());
+     $response['message'] = 'Ocurrió un error inesperado.';
+}
+
+
+echo json_encode($response);
+
+?>

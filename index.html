@@ -1,93 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Login de Empleados</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos básicos para demostración si style.css no está presente */
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f0f0; margin: 0; }
-        .login-container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
-        .login-form input { margin-bottom: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: calc(100% - 18px); }
-        .login-form button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .login-form button:hover { background-color: #0056b3; }
-        #error-message { color: red; margin-top: 10px; min-height: 1.2em; /* Para evitar saltos de diseño */ }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-image: url('Imagenes/biblioteca.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        body.fondo-inicio {
+            background-image: url('Imagenes/inicioe.jpg');
+        }
+
+        .login-container, .bienvenida-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-ingresar {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-ingresar:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-salir {
+            background-color: #dc3545;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-salir:hover {
+            background-color: #c82333;
+        }
+
+        .mensaje-verde {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
+
+    <!-- Contenedor de Login -->
+    <div class="login-container" id="login-container">
         <h1>Inicio de Sesión</h1>
-        <form id="login-form" class="login-form">
-            <input
-                type="text"
-                id="usuario"
-                placeholder="Nombre de usuario"
-            > <br><br> <input
-                type="current-password"
-                id="contrasena"
-                placeholder="Contraseña"
-            ><br><br> <button type="submit">Ingresar</button><br>
+        <form id="login-form">
+            <input type="text" id="usuario" placeholder="Nombre de usuario" required><br>
+            <input type="password" id="contrasena" placeholder="Contraseña" required><br>
+            <button type="submit" class="btn-ingresar">Ingresar</button>
         </form>
         <div id="error-message"></div>
     </div>
 
-    <div id='empleados_list'></div>
+    <!-- Contenedor de Bienvenida -->
+    <div class="bienvenida-container" id="bienvenida-container" style="display: none;">
+        <div class="mensaje-verde" id="mensaje-bienvenida"></div>
+        <button class="btn-salir" id="btn-salir">Salir</button>
+    </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        const form = document.getElementById('login-form');
+        const loginContainer = document.getElementById('login-container');
+        const bienvenidaContainer = document.getElementById('bienvenida-container');
+        const mensajeBienvenida = document.getElementById('mensaje-bienvenida');
+        const btnSalir = document.getElementById('btn-salir');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
+            const usuario = document.getElementById('usuario').value.trim().toLowerCase();
+            const contrasena = document.getElementById('contrasena').value.trim();
 
-            const usuario = document.getElementById('usuario').value;
-            const contrasena = document.getElementById('contrasena').value;
-            const errorMessage = document.getElementById('error-message');
-
-            // Limpiar mensajes de error previos
             errorMessage.textContent = '';
 
-            // Validar campos
-            if (!usuario || !contrasena) { // 
+            if (!usuario || !contrasena) {
                 errorMessage.textContent = 'Por favor, completa todos los campos.';
                 return;
             }
 
-            // Enviar datos al servidor
-            fetch('/login', { // Asegúrate de que esta ruta '/login' exista en tu backend
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ usuario, contrasena }) // Envía 'usuario' y 'contrasena'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Si la respuesta HTTP no es exitosa (ej. 401, 403, 500)
-                    // Intenta obtener un mensaje de error del cuerpo si es JSON
-                    return response.json().then(errData => {
-                        throw new Error(errData.message || `Error del servidor: ${response.status}`);
-                    }).catch(() => {
-                        // Si el cuerpo no es JSON o no hay mensaje, lanza error genérico
-                        throw new Error(`Error del servidor: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Redirigir o mostrar contenido de empleados
-                    errorMessage.textContent = ''; // Ya se limpió arriba, pero no está de más
-                    // alert('¡Inicio de sesión exitoso!'); // Para prueba rápida
-                    window.location.href = '/bienvenido.html'; // Asegúrate que este archivo exista
-                    // cargarEmpleados();
-                } else {
-                    errorMessage.textContent = data.message || 'Credenciales incorrectas';
-                }
-            })
-            .catch(error => {
-                console.error('Error en el proceso de login:', error);
-                errorMessage.textContent = error.message || 'Error en la conexión o respuesta del servidor.';
-            });
+            if (usuario === 'admin') {
+                mostrarBienvenida('Administrador');
+            } else if (usuario === 'blas') {
+                mostrarBienvenida('Empleado');
+            } else {
+                errorMessage.textContent = 'Usuario incorrecto.';
+            }
+        });
+
+        function mostrarBienvenida(rol) {
+            loginContainer.style.display = 'none';
+            bienvenidaContainer.style.display = 'block';
+            mensajeBienvenida.textContent = `✔ Bienvenido, ${rol}. Has ingresado correctamente.`;
+            document.body.classList.add('fondo-inicio'); // Cambiar fondo
+        }
+
+        btnSalir.addEventListener('click', () => {
+            document.getElementById('usuario').value = '';
+            document.getElementById('contrasena').value = '';
+            errorMessage.textContent = '';
+
+            bienvenidaContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+            document.body.classList.remove('fondo-inicio'); // Restaurar fondo original
         });
     </script>
+
 </body>
 </html>
