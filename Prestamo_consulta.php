@@ -132,18 +132,19 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-     <div class="top-bar">
+<div class="top-bar">
         <button class="menu-button" onclick="toggleMenu()">Menú</button>
         <div class="button-group">
-            <a href="inicio_empleado.php?usuario=<?php echo urlencode($usuario); ?>" class="return-button">Regresar</a>
+            <a href="inicio_empleado.php?" class="return-button">Regresar</a>
             <a href="login.php" class="logout-button">Salir</a>
         </div>
     </div>
     <div class="dropdown-menu" id="mainMenu">
         <div class="menu-item" onclick="toggleSubmenu('alumnosSubmenu')">Prestamo</div>
         <div class="submenu" id="alumnosSubmenu">
-            <a href="Registrar_prestamo.php?usuario=<?php echo urlencode($usuario); ?>">Registrar</a>
-            <a href="Prestamo_consulta.php?usuario=<?php echo urlencode($usuario); ?>">Consultas</a>
+            <a href="Registrar_prestamo.php">Registrar Libro</a>
+            <a href="Devolver_libro.php">Devolver Libro</a>
+            <a href="Prestamo_consulta.php">Consultar prestamos</a>
         </div>
         
        

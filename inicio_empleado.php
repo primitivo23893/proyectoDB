@@ -120,7 +120,8 @@
         
         <div class="menu-item" onclick="toggleSubmenu('alumnosSubmenu')">PRESTAMOS</div>
         <div class="submenu" id="alumnosSubmenu">
-            <a href="Registrar_prestamo.php">Registrar prestamo</a>
+            <a href="Registrar_prestamo.php">Registrar Prestamo</a>
+            <a href="Devolver_libro.php">Devolver Libro</a>
             <a href="Prestamo_consulta.php">Consultas Prestamos</a>
         </div>
         

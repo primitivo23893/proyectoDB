@@ -34,7 +34,7 @@ try {
     $mail->Username = 'primitivo.oyoque6952@alumnos.udg.mx'; // Tu dirección de correo Gmail
     // ¡¡IMPORTANTE!! Coloca tu contraseña de aplicación de Gmail aquí si usas 2FA,
     // o tu contraseña normal si tienes "Acceso de aplicaciones menos seguras" habilitado (no recomendado).
-    $mail->Password = 'pbniqyttdozebmqq'; //https://myaccount.google.com/apppasswords
+    $mail->Password = '00000000'; //https://myaccount.google.com/apppasswords
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
     $mail->CharSet = 'UTF-8'; // Para correcta visualización de acentos y ñ

@@ -181,15 +181,16 @@
      <div class="top-bar">
         <button class="menu-button" onclick="toggleMenu()">Menú</button>
         <div class="button-group">
-            <a href="inicio_empleado.php?usuario=<?php echo urlencode($usuario); ?>" class="return-button">Regresar</a>
+            <a href="inicio_empleado.php?" class="return-button">Regresar</a>
             <a href="login.php" class="logout-button">Salir</a>
         </div>
     </div>
     <div class="dropdown-menu" id="mainMenu">
         <div class="menu-item" onclick="toggleSubmenu('alumnosSubmenu')">Prestamo</div>
         <div class="submenu" id="alumnosSubmenu">
-            <a href="Registrar_prestamo.php?usuario=<?php echo urlencode($usuario); ?>">Registrar</a>
-            <a href="Prestamo_consulta.php?usuario=<?php echo urlencode($usuario); ?>">Consultas</a>
+            <a href="Registrar_prestamo.php">Registrar Libro</a>
+            <a href="Devolver_libro.php">Devolver Libro</a>
+            <a href="Prestamo_consulta.php">Consultar prestamos</a>
         </div>
         
        
@@ -448,7 +449,6 @@
                                 // Mostrar mensaje de préstamo exitoso y programar su eliminación
                                 mostrarFeedback(dataAlmacenar.message, 'success', true, idMensajePrestamoExitoso, 8);
 
-                                // Mostrar "Enviando correo..."
                                 mostrarFeedback('Enviando correo de confirmación...', 'info', true, 'msg-enviando-correo');
 
                                 const datosParaCorreo = new FormData();
@@ -480,7 +480,6 @@
 
                                     mostrarFeedback('Actualizando lista de libros disponibles...', 'info', true, 'msg-actualizando-libros');
                                     cargarLibrosYEjemplares();
-                                    // El mensaje "Actualizando..." se quedará hasta la próxima acción o se podría quitar también
                                     // setTimeout(() => eliminarFeedback('msg-actualizando-libros'), 3000); // Opcional: quitar después de un tiempo
                                 } else {
                                     mostrarFeedback(dataCorreo.message || 'Error desconocido al enviar el correo.', 'error', true);
@@ -499,8 +498,7 @@
                         .finally(() => {
                             submitButton.disabled = false;
                             submitButton.value = 'Registrar Préstamo';
-                            // Quitar mensaje de "actualizando libros" si aún existe después de un delay,
-                            // para asegurar que no se quede si la carga fue muy rápida o falló.
+
                             setTimeout(() => eliminarFeedback('msg-actualizando-libros'), 2000);
                         });
                 });
