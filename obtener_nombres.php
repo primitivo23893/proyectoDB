@@ -5,9 +5,9 @@ $con = conecta();
 $tipo = $_GET['tipo'] ?? '';
 
 if ($tipo === 'alumna') {
-    $query = "SELECT codigo, nombre FROM alumno";
+    $query = "SELECT codigo, nombre FROM alumno ORDER BY nombre";
 } elseif ($tipo === 'maestra') {
-    $query = "SELECT codigo, nombre FROM profesor";
+    $query = "SELECT codigo, nombre FROM profesor ORDER BY nombre";
 } else {
     echo json_encode([]);
     exit;
