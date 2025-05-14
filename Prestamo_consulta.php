@@ -27,6 +27,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         table {
+            
             width: 100%;
             border-collapse: collapse;
             background: white;
@@ -34,6 +35,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         th, td {
+            
             padding: 12px;
             border: 1px solid #ccc;
             text-align: center;

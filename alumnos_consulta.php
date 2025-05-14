@@ -1,12 +1,13 @@
 <?php
 // Incluir el archivo de conexión
 include 'conexion.php';
+$conn = conecta(); 
 $usuario = $_GET['usuario'] ?? 'Administrador';
 
 // Consultar todos los alumnos
 try {
     $sql = "SELECT * FROM Alumno ORDER BY nombre";
-    $stmt = $conn->query($sql);
+    $stmt = $con->query($sql);
     $alumnos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $error = "Error al consultar la base de datos: " . $e->getMessage();

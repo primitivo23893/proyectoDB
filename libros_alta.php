@@ -2,6 +2,7 @@
 // Incluir el archivo de conexión
 include 'conexion.php';
 $usuario = $_GET['usuario'] ?? 'Administrador';
+$con = conecta();
 
 // Procesar el formulario cuando se envía
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -21,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Preparar la consulta SQL
             $sql = "INSERT INTO Libro (isbn, titulo, autor, editorial, anio_publicacion, num_ejemplares) 
                     VALUES (:isbn, :titulo, :autor, :editorial, :anio_publicacion, :num_ejemplares)";
-            $stmt = $conn->prepare($sql);
+            $stmt = $con->prepare($sql);
             
             // Vincular parámetros
             $stmt->bindParam(':isbn', $isbn);
