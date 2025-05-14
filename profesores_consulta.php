@@ -6,7 +6,7 @@ $usuario = $_GET['usuario'] ?? 'Administrador';
 
 // Consultar todos los profesores
 try {
-    $sql = "SELECT * FROM Profesor ORDER BY nombre";
+    $sql = "SELECT * FROM profesor ORDER BY nombre";
     $stmt = $con->query($sql);
     $profesores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -263,7 +263,7 @@ try {
                                 <td><?php echo htmlspecialchars($profesor['nombre']); ?></td>
                                 <td><?php echo htmlspecialchars($profesor['carrera']); ?></td>
                                 <td><?php echo htmlspecialchars($profesor['correo']); ?></td>
-                                <td><?php echo htmlspecialchars($profesor['fecha_contratacion']); ?></td>
+                                <td><?php echo htmlspecialchars($profesor['fecha_contra']); ?></td>
                                 <td><?php echo htmlspecialchars($profesor['antiguedad']); ?></td>
                             </tr>
                         <?php endforeach; ?>

@@ -9,18 +9,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'] ?? '';
     $carrera = $_POST['carrera'] ?? '';
     $correo = $_POST['correo'] ?? '';
-    $fecha_contratacion = $_POST['fecha_contratacion'] ?? '';
+    $fecha_contra = $_POST['fecha_contra'] ?? '';
     $antiguedad = $_POST['antiguedad'] ?? '';
     
     // Validación básica
-    if (empty($codigo) || empty($nombre) || empty($carrera) || empty($correo) || empty($fecha_contratacion)) {
+    if (empty($codigo) || empty($nombre) || empty($carrera) || empty($correo) || empty($fecha_contra)) {
         $mensaje = "❌ Por favor complete todos los campos obligatorios.";
         $tipo = "error";
     } else {
         try {
             // Preparar la consulta SQL
-            $sql = "INSERT INTO Profesor (codigo, nombre, carrera, correo, fecha_contratacion, antiguedad) 
-                    VALUES (:codigo, :nombre, :carrera, :correo, :fecha_contratacion, :antiguedad)";
+            $sql = "INSERT INTO profesor (codigo, nombre, carrera, correo, fecha_contra, antiguedad) 
+                    VALUES (:codigo, :nombre, :carrera, :correo, :fecha_contra, :antiguedad)";
             $stmt = $con->prepare($sql);
             
             // Vincular parámetros
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':nombre', $nombre);
             $stmt->bindParam(':carrera', $carrera);
             $stmt->bindParam(':correo', $correo);
-            $stmt->bindParam(':fecha_contratacion', $fecha_contratacion);
+            $stmt->bindParam(':fecha_contra', $fecha_contra);
             $stmt->bindParam(':antiguedad', $antiguedad);
             
             // Ejecutar la consulta
@@ -291,8 +291,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 
                 <div class="form-group">
-                    <label for="fecha_contratacion">Fecha de contratación:</label>
-                    <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
+                    <label for="fecha_contra">Fecha de contratación:</label>
+                    <input type="date" id="fecha_contra" name="fecha_contra" required>
                 </div>
                 
                 <div class="form-group">

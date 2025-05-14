@@ -10,8 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $titulo = $_POST['titulo'] ?? '';
     $autor = $_POST['autor'] ?? '';
     $editorial = $_POST['editorial'] ?? '';
-    $anio_publicacion = $_POST['anio_publicacion'] ?? '';
-    $num_ejemplares = $_POST['num_ejemplares'] ?? '';
+    $anio_publi = $_POST['anio_publi'] ?? '';
+    $num_ejemplar = $_POST['num_ejemplar'] ?? '';
     
     // Validación básica
     if (empty($isbn) || empty($titulo) || empty($autor)) {
@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         try {
             // Preparar la consulta SQL
-            $sql = "INSERT INTO Libro (isbn, titulo, autor, editorial, anio_publicacion, num_ejemplares) 
-                    VALUES (:isbn, :titulo, :autor, :editorial, :anio_publicacion, :num_ejemplares)";
+            $sql = "INSERT INTO libro (isbn, titulo, autor, editorial, anio_publi, num_ejemplar) 
+                    VALUES (:isbn, :titulo, :autor, :editorial, :anio_publi, :num_ejemplar)";
             $stmt = $con->prepare($sql);
             
             // Vincular parámetros
@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':titulo', $titulo);
             $stmt->bindParam(':autor', $autor);
             $stmt->bindParam(':editorial', $editorial);
-            $stmt->bindParam(':anio_publicacion', $anio_publicacion);
-            $stmt->bindParam(':num_ejemplares', $num_ejemplares);
+            $stmt->bindParam(':anio_publi', $anio_publi);
+            $stmt->bindParam(':num_ejemplar', $num_ejemplar);
             
             // Ejecutar la consulta
             $stmt->execute();
@@ -289,13 +289,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 
                 <div class="form-group">
-                    <label for="anio_publicacion">Año de publicación:</label>
-                    <input type="number" id="anio_publicacion" name="anio_publicacion" min="1000" max="<?php echo date('Y'); ?>">
+                    <label for="anio_publi">Año de publicación:</label>
+                    <input type="number" id="anio_publi" name="anio_publi" min="1000" max="<?php echo date('Y'); ?>">
                 </div>
                 
                 <div class="form-group">
-                    <label for="num_ejemplares">Número de ejemplares:</label>
-                    <input type="number" id="num_ejemplares" name="num_ejemplares" min="0">
+                    <label for="num_ejemplar">Número de ejemplares:</label>
+                    <input type="number" id="num_ejemplar" name="num_ejemplar" min="0">
                 </div>
                 
                 <button type="submit" class="submit-button">Registrar Libro</button>
