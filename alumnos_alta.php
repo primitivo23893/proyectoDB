@@ -1,5 +1,6 @@
 <?php
 include 'conexion.php';
+$con = conecta();
 $usuario = $_GET['usuario'] ?? 'Administrador';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -14,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         try {
             $sql = "INSERT INTO Alumno (codigo, nombre, carrera, correo) VALUES (:codigo, :nombre, :carrera, :correo)";
-            $stmt = $conn->prepare($sql);
+            $stmt = $con->prepare($sql);
             $stmt->bindParam(':codigo', $codigo);
             $stmt->bindParam(':nombre', $nombre);
             $stmt->bindParam(':carrera', $carrera);
