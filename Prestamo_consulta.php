@@ -173,7 +173,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= $p['fecha_entrega_solicitante'] ?? '-' ?></td>
             <td>
     <?php if (!empty($p['multa']) && $p['multa'] > 0): ?>
-        <a href="generar_orden.php?id=<?= $p['id_prestamo'] ?>" target="_blank">Generar orden ($<?= $p['multa'] ?>)</a>
+        <a href="multas_pdf.php?id=<?= $p['id_prestamo'] ?>" target="_blank">Generar orden ($<?= $p['multa'] ?>)</a>
     <?php else: ?>
         -
     <?php endif; ?>
