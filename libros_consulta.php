@@ -173,8 +173,8 @@ try {
                                 <td><?php echo htmlspecialchars($libro['titulo']); ?></td>
                                 <td><?php echo htmlspecialchars($libro['autor']); ?></td>
                                 <td><?php echo htmlspecialchars($libro['editorial']); ?></td>
-                                <td><?php echo htmlspecialchars($libro['anio_publicacion']); ?></td>
-                                <td><?php echo htmlspecialchars($libro['num_ejemplares']); ?></td>
+                                <td><?php echo htmlspecialchars($libro['anio_publi']); ?></td>
+                                <td><?php echo htmlspecialchars($libro['num_ejemplar']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
